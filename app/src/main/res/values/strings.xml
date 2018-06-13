@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">NotificationTest</string>
+    <string name="pick_image">Pick Face</string>
+    <string name="todo">TODO</string>
+
+</resources>
