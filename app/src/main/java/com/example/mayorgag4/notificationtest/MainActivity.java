@@ -48,8 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void openGallery() {
-        Intent gallery =
-                new Intent(Intent.ACTION_PICK,
+        Intent gallery = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(gallery, PICK_IMAGE);
     }
@@ -61,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
             Uri imageUri = data.getData();
             imageView.setImageURI(imageUri);
+
         }
     }
 
