@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
             Uri imageUri = data.getData();
             manageImageFromUri(imageUri);
-
+            imageView.setImageURI(imageUri);
         }
     }
 
@@ -72,16 +72,12 @@ public class MainActivity extends AppCompatActivity {
                     this.getContentResolver(), imageUri);
 
         } catch (Exception e) {
-            // Manage exception ...
         }
 
-        if (bitmap != null) {
-
-        }
 
     }
 
-     View.OnClickListener buttonClickListener = new View.OnClickListener() {
+     private View.OnClickListener buttonClickListener = new View.OnClickListener() {
 
 
         @Override
@@ -112,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
                 );
             }
 
+            Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 500, 800, false);
 
-//            Bitmap pic = BitmapFactory.decodeResource(getResources(), R.drawable.images);
 
             // NotificationCompat Builder takes care of backwards compatibility and
             // provides clean API to create rich notifications
@@ -122,9 +118,9 @@ public class MainActivity extends AppCompatActivity {
                     //LargeIcon and setStyle needs to be updated to pull from app
                     //setContentTitle needs to be updated to info about match
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
-                    .setLargeIcon(bitmap)
+                    .setLargeIcon(resizedBitmap)
                     .setContentTitle("Something important happened")
-                    .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap))
+                    .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(resizedBitmap))
                     .setAutoCancel(true)
                     .setContentIntent(detailsPendingIntent)
                     .addAction(android.R.drawable.ic_menu_compass, "Details", detailsPendingIntent);
