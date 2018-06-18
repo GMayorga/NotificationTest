@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
             Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 500, 800, false);
 
+            NOTIFICATION_ID++;
 
             // NotificationCompat Builder takes care of backwards compatibility and
             // provides clean API to create rich notifications
