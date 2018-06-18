@@ -94,19 +94,6 @@ public class MainActivity extends AppCompatActivity {
                     PendingIntent.FLAG_UPDATE_CURRENT
             );
 
-            // Define PendingIntent for Reply action
-            PendingIntent replyPendingIntent = null;
-            // Call Activity on platforms that don't support DirectReply natively
-            if (Build.VERSION.SDK_INT < 24) {
-                replyPendingIntent = detailsPendingIntent;
-            } else { // Call BroadcastReceiver on platforms supporting DirectReply
-                replyPendingIntent = PendingIntent.getBroadcast(
-                        MainActivity.this,
-                        0,
-                        new Intent(MainActivity.this, ReplyReceiver.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-            }
 
             Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 500, 800, false);
 
@@ -119,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     //setContentTitle needs to be updated to info about match
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
                     .setLargeIcon(resizedBitmap)
-                    .setContentTitle("Something important happened")
+                    .setContentTitle("Database Text Once It's Built")
                     .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(resizedBitmap))
                     .setAutoCancel(true)
                     .setContentIntent(detailsPendingIntent)
