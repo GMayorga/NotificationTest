@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     public static int NOTIFICATION_ID = 1;
     private Button button;
     public static final String KEY_NOTIFICATION_REPLY = "KEY_NOTIFICATION_REPLY";
+    Bitmap bitmap;
 
 
     @Override
@@ -59,14 +60,30 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
             Uri imageUri = data.getData();
-            imageView.setImageURI(imageUri);
+            manageImageFromUri(imageUri);
 
         }
     }
 
+    private void manageImageFromUri(Uri imageUri) {
+
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(
+                    this.getContentResolver(), imageUri);
+
+        } catch (Exception e) {
+            // Manage exception ...
+        }
+
+        if (bitmap != null) {
+
+        }
+
+    }
+
+     View.OnClickListener buttonClickListener = new View.OnClickListener() {
 
 
-    private View.OnClickListener buttonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
@@ -96,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-            Bitmap pic = BitmapFactory.decodeResource(getResources(), R.drawable.images);
+//            Bitmap pic = BitmapFactory.decodeResource(getResources(), R.drawable.images);
 
             // NotificationCompat Builder takes care of backwards compatibility and
             // provides clean API to create rich notifications
@@ -105,9 +122,9 @@ public class MainActivity extends AppCompatActivity {
                     //LargeIcon and setStyle needs to be updated to pull from app
                     //setContentTitle needs to be updated to info about match
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
-                    .setLargeIcon(pic)
+                    .setLargeIcon(bitmap)
                     .setContentTitle("Something important happened")
-                    .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(pic))
+                    .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap))
                     .setAutoCancel(true)
                     .setContentIntent(detailsPendingIntent)
                     .addAction(android.R.drawable.ic_menu_compass, "Details", detailsPendingIntent);
