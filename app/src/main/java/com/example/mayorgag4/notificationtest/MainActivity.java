@@ -3,14 +3,10 @@ package com.example.mayorgag4.notificationtest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.RemoteInput;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     private ImageView imageView;
     public static int NOTIFICATION_ID = 1;
-    public static final String KEY_NOTIFICATION_REPLY = "KEY_NOTIFICATION_REPLY";
     Bitmap bitmap;
 
 
@@ -84,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
 
-            // Create PendingIntent to take us to DetailsActivity
-            // as a result of notification action
             Intent detailsIntent = new Intent(MainActivity.this, DetailsActivity.class);
             detailsIntent.putExtra("EXTRA_DETAILS_ID", 42);
             PendingIntent detailsPendingIntent = PendingIntent.getActivity(
@@ -99,9 +92,8 @@ public class MainActivity extends AppCompatActivity {
             Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 500, 800, false);
 
             NOTIFICATION_ID++;
-            
-            // NotificationCompat Builder takes care of backwards compatibility and
-            // provides clean API to create rich notifications
+
+
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
 
                     //LargeIcon and setStyle needs to be updated to pull from app
@@ -114,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
                     .setContentIntent(detailsPendingIntent)
                     .addAction(android.R.drawable.ic_menu_compass, "Details", detailsPendingIntent);
 
-            // Obtain NotificationManager system service in order to show the notification
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 
