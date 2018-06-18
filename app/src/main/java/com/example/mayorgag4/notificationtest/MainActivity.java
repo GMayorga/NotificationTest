@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     private ImageView imageView;
     public static int NOTIFICATION_ID = 1;
-    private Button button;
     public static final String KEY_NOTIFICATION_REPLY = "KEY_NOTIFICATION_REPLY";
     Bitmap bitmap;
 
@@ -31,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button button;
 
         imageView = (ImageView) findViewById(R.id.image_view);
 
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     this.getContentResolver(), imageUri);
 
         } catch (Exception e) {
+
         }
 
 
