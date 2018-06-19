@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             final ImageView imageView = (ImageView) findViewById(R.id.image_view);
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
-            if (imageFile.exists()) {   // TODO: is there a better way to do this?
+            if (imageFile.exists()) {
                 Bitmap bm = BitmapFactory.decodeFile(imageLocation);
                 imageView.setImageBitmap(bm);
             }
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openGallery() {
+        //This will open the phone's gallery
         Intent gallery = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(gallery, PICK_IMAGE);
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //This code is to display the selected image from Gallery and send the image to be converted to Bitmap
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
             Uri imageUri = data.getData();
@@ -89,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void manageImageFromUri(Uri imageUri) {
+        //This will create a bitmap out of the imageURI from onActivityResult
+        //so it can be used as part of notification images since they require bitmap
 
         try {
             bitmap = MediaStore.Images.Media.getBitmap(
@@ -106,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
+        //This code is to create notifications
 
             Intent detailsIntent = new Intent(MainActivity.this, DetailsActivity.class);
             detailsIntent.putExtra("EXTRA_DETAILS_ID", 42);
