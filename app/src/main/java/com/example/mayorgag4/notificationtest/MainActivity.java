@@ -3,7 +3,9 @@ package com.example.mayorgag4.notificationtest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
@@ -14,11 +16,14 @@ import android.widget.Button;
 
 import android.widget.ImageView;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     private ImageView imageView;
     public static int NOTIFICATION_ID = 1;
     Bitmap bitmap;
+    Bitmap bitmapGallery;
 
 
     @Override
@@ -40,8 +45,29 @@ public class MainActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.button);
         button.setOnClickListener(buttonClickListener);
 
-    }
 
+        // Find the last picture
+        String[] projection = new String[]{
+                MediaStore.Images.ImageColumns._ID,
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.ImageColumns.DATE_TAKEN,
+                MediaStore.Images.ImageColumns.MIME_TYPE
+        };
+        final Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+
+        // Put it in the image view
+        if (cursor.moveToFirst()) {
+            final ImageView imageView = (ImageView) findViewById(R.id.image_view);
+            String imageLocation = cursor.getString(1);
+            File imageFile = new File(imageLocation);
+            if (imageFile.exists()) {   // TODO: is there a better way to do this?
+                Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+                imageView.setImageBitmap(bm);
+            }
+        }
+    }
 
     private void openGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK,
@@ -59,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
             imageView.setImageURI(imageUri);
         }
     }
+
+
 
     private void manageImageFromUri(Uri imageUri) {
 
@@ -94,6 +122,12 @@ public class MainActivity extends AppCompatActivity {
             NOTIFICATION_ID++;
 
 
+            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent,
+                    PendingIntent.FLAG_ONE_SHOT);
+
+
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
 
                     //LargeIcon and setStyle needs to be updated to pull from app
@@ -103,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                     .setContentTitle("Database Text Once It's Built")
                     .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(resizedBitmap))
                     .setAutoCancel(true)
-                    .setContentIntent(detailsPendingIntent)
+                    .setContentIntent(pendingIntent)
                     .addAction(android.R.drawable.ic_menu_compass, "Details", detailsPendingIntent);
 
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
