@@ -42,9 +42,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(buttonClickListener);
-
         lastPhotoGallery();
 
     }
@@ -73,15 +70,14 @@ public class MainActivity extends AppCompatActivity {
 
                 if (bitmapGallery != null) {
 
-                imageView.setImageBitmap(bitmapGallery);}
+                imageView.setImageBitmap(bitmapGallery);
+                    notifications();
+                }
             }
         }
 
 
     }
-
-
-
 
     private void openGallery() {
         //This will open the phone's gallery
@@ -99,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
             Uri imageUri = data.getData();
             manageImageFromUri(imageUri);
             imageView.setImageURI(imageUri);
+            notifications();
         }
     }
 
@@ -119,13 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-     private View.OnClickListener buttonClickListener = new View.OnClickListener() {
-
-
-        @Override
-        public void onClick(View view) {
-        //This code is to create notifications
-
+    public void notifications(){
             Intent detailsIntent = new Intent(MainActivity.this, DetailsActivity.class);
             detailsIntent.putExtra("EXTRA_DETAILS_ID", 42);
             PendingIntent detailsPendingIntent = PendingIntent.getActivity(
@@ -135,8 +126,6 @@ public class MainActivity extends AppCompatActivity {
                     PendingIntent.FLAG_UPDATE_CURRENT
             );
 
-
-
             //Need to increase notification id by 1 in order to have multiple notifications displayed, otherwise notifications
             //will overwrite previous notification
             NOTIFICATION_ID++;
@@ -145,12 +134,10 @@ public class MainActivity extends AppCompatActivity {
             if (bitmap !=null){
                 //Need to resize bitmaps otherwise app will crash and/or not display photo correctly
                 finalBitmapPic = Bitmap.createScaledBitmap(bitmap, 500, 800, false);
-
             }
             else{
                 //Need to resize bitmaps otherwise app will crash and/or not display photo correctly
                 finalBitmapPic = Bitmap.createScaledBitmap(bitmapGallery, 500, 800, false);
-
             }
 
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
@@ -168,8 +155,5 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 
         }
-
-
-    };
 }
 
