@@ -93,28 +93,20 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
             Uri imageUri = data.getData();
-            manageImageFromUri(imageUri);
-            imageView.setImageURI(imageUri);
+
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(
+                        this.getContentResolver(), imageUri);
+
+            } catch (Exception e) {
+
+            }
+            imageView.setImageBitmap(bitmap);
             notifications();
         }
     }
 
 
-
-    private void manageImageFromUri(Uri imageUri) {
-        //This will create a bitmap out of the imageURI from onActivityResult
-        //so it can be used as part of notification images since they require bitmap
-
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(
-                    this.getContentResolver(), imageUri);
-
-        } catch (Exception e) {
-
-        }
-
-
-    }
 
     public void notifications(){
             Intent detailsIntent = new Intent(MainActivity.this, DetailsActivity.class);
