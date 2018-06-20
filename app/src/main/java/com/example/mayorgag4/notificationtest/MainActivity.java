@@ -7,14 +7,16 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
 import android.widget.ImageView;
+
 
 import java.io.File;
 
@@ -46,7 +48,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void lastPhotoInGallery (){
+
+
+
+    public void lastPhotoInGallery () {
 
         // Find the last picture
         String[] projection = new String[]{
@@ -60,23 +65,31 @@ public class MainActivity extends AppCompatActivity {
                 null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
 
         // Put it in the image view
-        if (cursor.moveToFirst()) {
-            final ImageView imageView = (ImageView) findViewById(R.id.image_view);
-            String imageLocation = cursor.getString(1);
-            File imageFile = new File(imageLocation);
 
-            if (imageFile.exists()) {
-                bitmapAutoGallery = BitmapFactory.decodeFile(imageLocation);
 
-                if (bitmapAutoGallery != null) {
+            if (cursor.moveToFirst()) {
+                final ImageView imageView = (ImageView) findViewById(R.id.image_view);
+                String imageLocation  = cursor.getString(1);
+                File imageFile = new File(imageLocation);
 
-                imageView.setImageBitmap(bitmapAutoGallery);
+                if (imageFile.exists()) {
+                    bitmapAutoGallery = BitmapFactory.decodeFile(imageLocation);
 
-                //This is required in order to make notification appear automatically:
-                    notifications();
+                    if (bitmapAutoGallery != null) {
+                        imageView.setImageBitmap(bitmapAutoGallery);
+
+                        //This is required in order to make notification appear automatically
+                        //However, a delay is required because if it appears to soon on phone, it will not appear on Glass
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                notifications();
+                            }
+                        }, 2000);
+
+                    }
                 }
             }
-        }
 
     }
 
@@ -112,6 +125,15 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    //This can be used for when I have the code that checks if a new image has been added to gallery:
+public void attemptToRefresh(){
+
+    Intent intent = getIntent();
+    finish();
+    startActivity(intent);
+
+
+}
     public void notifications(){
         //This code is required to send notifications to the phone and Google Glass
         //Google Glass automatically will display phone notifications as part of its design
@@ -138,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                 finalBitmapPic = Bitmap.createScaledBitmap(bitmapSelectGallery, 500, 800, false);
             }
             else{
-                //bitmapAutoGallery is for the image that autoloads on app since it is latest image in Gallery
+                //bitmapAutoGallery is for the image that auto loads on app since it is latest image in Gallery
                 //Need to resize bitmaps otherwise app will crash and/or not display photo correctly
                 finalBitmapPic = Bitmap.createScaledBitmap(bitmapAutoGallery, 500, 800, false);
             }
