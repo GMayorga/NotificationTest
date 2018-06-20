@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 public class DetailsActivity extends AppCompatActivity {
+    //When the notification is clicked on the phone, a new screen will appear
+    //New screen is currently blank
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

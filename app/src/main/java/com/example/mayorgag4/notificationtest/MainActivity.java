@@ -22,18 +22,17 @@ public class MainActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     private ImageView imageView;
     public static int NOTIFICATION_ID = 1;
-    Bitmap bitmap;
-    Bitmap bitmapGallery;
+    Bitmap bitmapSelectGallery;
+    Bitmap bitmapAutoGallery;
     Bitmap finalBitmapPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button button;
 
+        //This is required to open the gallery to select a photo:
         imageView = (ImageView) findViewById(R.id.image_view);
-
         Button pickImageButton = (Button) findViewById(R.id.pick_image_button);
         pickImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,11 +41,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        lastPhotoGallery();
+        //This is required to have the most recent photo appear on the app:
+        lastPhotoInGallery();
 
     }
 
-    public void lastPhotoGallery (){
+    public void lastPhotoInGallery (){
 
         // Find the last picture
         String[] projection = new String[]{
@@ -66,16 +66,17 @@ public class MainActivity extends AppCompatActivity {
             File imageFile = new File(imageLocation);
 
             if (imageFile.exists()) {
-                bitmapGallery = BitmapFactory.decodeFile(imageLocation);
+                bitmapAutoGallery = BitmapFactory.decodeFile(imageLocation);
 
-                if (bitmapGallery != null) {
+                if (bitmapAutoGallery != null) {
 
-                imageView.setImageBitmap(bitmapGallery);
+                imageView.setImageBitmap(bitmapAutoGallery);
+
+                //This is required in order to make notification appear automatically:
                     notifications();
                 }
             }
         }
-
 
     }
 
@@ -89,19 +90,22 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //This code is to display the selected image from Gallery and send the image to be converted to Bitmap
+        //This code is to display the selected image from Gallery and convert to Bitmap
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
             Uri imageUri = data.getData();
 
+            //This is required to make a bitmap out of URI. Notifications can only display bitmap
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(
+                bitmapSelectGallery = MediaStore.Images.Media.getBitmap(
                         this.getContentResolver(), imageUri);
 
             } catch (Exception e) {
 
             }
-            imageView.setImageBitmap(bitmap);
+            imageView.setImageBitmap(bitmapSelectGallery);
+
+            //This is required in order to make notification appear automatically:
             notifications();
         }
     }
@@ -109,6 +113,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void notifications(){
+        //This code is required to send notifications to the phone and Google Glass
+        //Google Glass automatically will display phone notifications as part of its design
+
+            //This is used to open the new screen when the notification is clicked on the phone:
             Intent detailsIntent = new Intent(MainActivity.this, DetailsActivity.class);
             detailsIntent.putExtra("EXTRA_DETAILS_ID", 42);
             PendingIntent detailsPendingIntent = PendingIntent.getActivity(
@@ -123,18 +131,21 @@ public class MainActivity extends AppCompatActivity {
             NOTIFICATION_ID++;
 
             //To determine what needs to be displayed
-            if (bitmap !=null){
+            if (bitmapSelectGallery !=null){
+
+                //bitmapSelectGallery is for images selected from Gallery on phone
                 //Need to resize bitmaps otherwise app will crash and/or not display photo correctly
-                finalBitmapPic = Bitmap.createScaledBitmap(bitmap, 500, 800, false);
+                finalBitmapPic = Bitmap.createScaledBitmap(bitmapSelectGallery, 500, 800, false);
             }
             else{
+                //bitmapAutoGallery is for the image that autoloads on app since it is latest image in Gallery
                 //Need to resize bitmaps otherwise app will crash and/or not display photo correctly
-                finalBitmapPic = Bitmap.createScaledBitmap(bitmapGallery, 500, 800, false);
+                finalBitmapPic = Bitmap.createScaledBitmap(bitmapAutoGallery, 500, 800, false);
             }
 
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
 
-                    //LargeIcon and setStyle needs to be updated to pull from app
+                    //LargeIcon needs to be updated to pull from app
                     //setContentTitle needs to be updated to info about match
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
                     .setLargeIcon(finalBitmapPic)
