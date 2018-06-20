@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     public static int NOTIFICATION_ID = 1;
     Bitmap bitmap;
     Bitmap bitmapGallery;
-
+    Bitmap finalBitmapPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +45,11 @@ public class MainActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.button);
         button.setOnClickListener(buttonClickListener);
 
+        lastPhotoGallery();
+
+    }
+
+    public void lastPhotoGallery (){
 
         // Find the last picture
         String[] projection = new String[]{
@@ -62,12 +67,21 @@ public class MainActivity extends AppCompatActivity {
             final ImageView imageView = (ImageView) findViewById(R.id.image_view);
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
+
             if (imageFile.exists()) {
-                Bitmap bm = BitmapFactory.decodeFile(imageLocation);
-                imageView.setImageBitmap(bm);
+                bitmapGallery = BitmapFactory.decodeFile(imageLocation);
+
+                if (bitmapGallery != null) {
+
+                imageView.setImageBitmap(bitmapGallery);}
             }
         }
+
+
     }
+
+
+
 
     private void openGallery() {
         //This will open the phone's gallery
@@ -122,33 +136,40 @@ public class MainActivity extends AppCompatActivity {
             );
 
 
-            Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 500, 800, false);
 
+            //Need to increase notification id by 1 in order to have multiple notifications displayed, otherwise notifications
+            //will overwrite previous notification
             NOTIFICATION_ID++;
 
+            //To determine what needs to be displayed
+            if (bitmap !=null){
+                //Need to resize bitmaps otherwise app will crash and/or not display photo correctly
+                finalBitmapPic = Bitmap.createScaledBitmap(bitmap, 500, 800, false);
 
-            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent,
-                    PendingIntent.FLAG_ONE_SHOT);
+            }
+            else{
+                //Need to resize bitmaps otherwise app will crash and/or not display photo correctly
+                finalBitmapPic = Bitmap.createScaledBitmap(bitmapGallery, 500, 800, false);
 
+            }
 
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
 
                     //LargeIcon and setStyle needs to be updated to pull from app
                     //setContentTitle needs to be updated to info about match
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
-                    .setLargeIcon(resizedBitmap)
+                    .setLargeIcon(finalBitmapPic)
                     .setContentTitle("Database Text Once It's Built")
-                    .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(resizedBitmap))
                     .setAutoCancel(true)
-                    .setContentIntent(pendingIntent)
+                    .setContentIntent(detailsPendingIntent)
                     .addAction(android.R.drawable.ic_menu_compass, "Details", detailsPendingIntent);
 
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 
         }
+
+
     };
 }
 
