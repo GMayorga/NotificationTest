@@ -2,6 +2,7 @@ package com.example.mayorgag4.notificationtest;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -16,17 +17,21 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-
+import android.widget.Toast;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
     private static final int PICK_IMAGE = 100;
     private ImageView imageView;
     public static int NOTIFICATION_ID = 1;
     Bitmap bitmapSelectGallery;
     Bitmap bitmapAutoGallery;
     Bitmap finalBitmapPic;
+
+    GalleryObserver directoryFileObserver;
+    Context context;
+    private static MainActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +51,16 @@ public class MainActivity extends AppCompatActivity {
         //This is required to have the most recent photo appear on the app:
         lastPhotoInGallery();
 
+        instance = this;
+
+        context = this;
+        directoryFileObserver = new GalleryObserver("/storage/emulated/0/MyGlass/");
+        directoryFileObserver.startWatching();
     }
 
-
-
-
+    public static MainActivity getInstance() {
+        return instance;
+    }
     public void lastPhotoInGallery () {
 
         // Find the last picture
@@ -123,17 +133,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-    //This can be used for when I have the code that checks if a new image has been added to gallery:
-public void attemptToRefresh(){
-
-    Intent intent = getIntent();
-    finish();
-    startActivity(intent);
-
-
-}
     public void notifications(){
         //This code is required to send notifications to the phone and Google Glass
         //Google Glass automatically will display phone notifications as part of its design
